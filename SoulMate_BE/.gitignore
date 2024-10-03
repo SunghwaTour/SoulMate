@@ -2,7 +2,7 @@
 *.pot
 *.pyc
 __pycache__/
-.venv/
-.vscode/
+venv/
+vscode/
 migrations
 db.sqlite3
