@@ -6,3 +6,4 @@ venv/
 vscode/
 migrations
 db.sqlite3
+my_settings.py
