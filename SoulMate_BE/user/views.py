@@ -33,7 +33,6 @@ def register(request):
             'user_id' : user.user_id,
             'message':'회원가입이 완료되었습니다.'
         }
-        print(response)
         return Response(response, status=status.HTTP_201_CREATED)
     
     data = 1 if 'non_field_errors' in serializer.errors else 2
@@ -98,7 +97,7 @@ def refresh_token(request):
         return Response({
             'result': 'false',
             'data': None,
-            'message': {'token': ['Token is invalid or expired']}
+            'message': {'token': ['토큰이 유효하지 않거나 만료 됐습니다']}
         }, status=status.HTTP_401_UNAUTHORIZED)
 
     # 유효한 경우, 새로운 access 토큰 반환
@@ -106,7 +105,7 @@ def refresh_token(request):
     return Response({
         'result': 'true',
         'data': response_data,
-        'message': 'Token refreshed successfully'
+        'message': '토큰 재발급 성공'
     }, status=status.HTTP_200_OK)
 
 # 프로필 조회 뷰
@@ -114,10 +113,12 @@ def refresh_token(request):
 @permission_classes([IsAuthenticated])
 def my_profile(request):
     user = request.user
+    profile_picture_url = user.profile_picture.url if user.profile_picture else None
     response_data = {
         'user_id': user.user_id,
         'username': user.username,
         'nickname': user.nickname,
+        'profile_picture' : profile_picture_url
     }
     return Response({
         'result': 'true',
