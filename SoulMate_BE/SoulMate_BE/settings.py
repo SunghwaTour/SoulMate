@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import my_settings
+from datetime import timedelta
 from pathlib import Path
+import pymysql
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,13 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w@r7ny&z&cf$t52zqoj$6c@r=%&96^lfy65^b1r&!w3b!e#s$m'
+SECRET_KEY = my_settings.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
+pymysql.install_as_MySQLdb()
 
 # Application definition
 
@@ -37,16 +41,35 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework_simplejwt.token_blacklist', 
     'rest_framework',
+    'user',
 ]
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # JWT 인증 클래스
+    ),
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        #'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        'rest_framework.permissions.IsAuthenticated',  # 권한 설정 (로그인한 사용자만 접근 가능)
     ]
+    
 }
+
+# JWT 설정 (필요에 따라 커스터마이징 가능)
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # 토큰의 유효기간을 60분으로 설정
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # 리프레시 토큰 유효기간을 7일로 설정
+    'AUTH_HEADER_TYPES': ('Bearer',),  # 토큰 전달 방식
+    'USER_ID_FIELD': 'user_id',  # 기본적으로 사용되는 필드를 user_id로 변경
+    'ROTATE_REFRESH_TOKENS': True,                  # 리프레시 토큰을 사용할 때마다 새 토큰 발급
+    'BLACKLIST_AFTER_ROTATION': True,               # 이전 리프레시 토큰을 블랙리스트에 추가하여 사용 불가능하게 함
+}
+
+AUTH_USER_MODEL = 'user.User'  # 커스텀 User 모델 사용
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -82,12 +105,7 @@ WSGI_APPLICATION = 'SoulMate_BE.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+DATABASES = my_settings.DATABASES
 
 
 # Password validation
@@ -114,11 +132,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_L10N = True
+
+USE_TZ = False
+
 
 
 # Static files (CSS, JavaScript, Images)
