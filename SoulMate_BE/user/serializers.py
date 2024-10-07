@@ -1,3 +1,4 @@
+from datetime import datetime
 from rest_framework import serializers
 from .models import User
 from django.contrib.auth.hashers import make_password, check_password
@@ -7,7 +8,7 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['user_id', 'username', 'password', 'password_confirm', 'nickname', 'phone_number', 'profile_picture', 'introduction']
+        fields = ['user_id', 'username', 'password', 'password_confirm', 'nickname', 'phone_number', 'profile_picture', 'introduction', 'last_login']
         extra_kwargs = {'password': {'write_only': True}} # 비밀번호는 쓰기 전용
 
     
@@ -24,10 +25,16 @@ class SignUpSerializer(serializers.ModelSerializer):
             username=validated_data['username'],
             nickname=validated_data['nickname'],
             phone_number=validated_data['phone_number'],
-            profile_picture=validated_data.get('profile_picture', None),
-            introduction=validated_data.get('introduction', None)
+            introduction=validated_data.get('introduction', None),
+            last_login=datetime.now()
         )
         user.password = make_password(validated_data['password'])
+        profile_picture = validated_data.get('profile_picture', None)
+        
+        if not profile_picture:
+            user.profile_picture = 'profile_pictures/default_image.jpg'
+        else:
+            user.profile_picture = profile_picture
         user.save()
         return user
     
