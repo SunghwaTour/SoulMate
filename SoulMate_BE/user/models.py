@@ -8,11 +8,6 @@ class UserManager(BaseUserManager):
         if not username:
             raise ValueError('The Username must be set')
 
-        # 직접 normalize_username 메서드를 정의하지 않는 경우 제거
-        # 또는 추가로 정규화 작업이 필요하다면 여기에 추가
-        # 예를 들어: username = username.lower() 
-        # 만약 소문자로 정규화하려는 경우
-
         user = self.model(username=username, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
@@ -37,7 +32,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     user_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)  # UUID를 기본키로 사용
     username = models.CharField(max_length=255, unique=True)  # 사용자 이름 (중복 불가)
-    password = models.CharField(max_length=255, unique=True)  # 비밀번호 (중복 불가)
+    password = models.CharField(max_length=255)  # 비밀번호
     nickname = models.CharField(max_length=255, unique=True)  # 닉네임 (중복 불가)
     phone_number = models.CharField(max_length=15, unique=True)  # 전화번호 (중복 불가)
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True, default='profile_pictures/default_image.jpg')
@@ -58,12 +53,3 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
-
-    def set_password(self, raw_password):
-        # 비밀번호를 해시하여 저장
-        self.password = make_password(raw_password)
-        self.save()
-
-    def check_password(self, raw_password):
-        # 해시된 비밀번호와 사용자가 입력한 비밀번호를 비교 
-        return check_password(raw_password, self.password)
