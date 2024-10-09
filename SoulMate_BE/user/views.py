@@ -33,7 +33,6 @@ def register(request):
             'user_id' : user.user_id,
             'message':'회원가입이 완료되었습니다.'
         }
-        print(response)
         return Response(response, status=status.HTTP_201_CREATED)
     
     data = 1 if 'non_field_errors' in serializer.errors else 2
@@ -98,7 +97,7 @@ def refresh_token(request):
         return Response({
             'result': 'false',
             'data': None,
-            'message': {'token': ['Token is invalid or expired']}
+            'message': {'token': ['토큰이 유효하지 않거나 만료 됐습니다']}
         }, status=status.HTTP_401_UNAUTHORIZED)
 
     # 유효한 경우, 새로운 access 토큰 반환
@@ -106,7 +105,7 @@ def refresh_token(request):
     return Response({
         'result': 'true',
         'data': response_data,
-        'message': 'Token refreshed successfully'
+        'message': '토큰 재발급 성공'
     }, status=status.HTTP_200_OK)
 
 # 프로필 조회 뷰
@@ -114,13 +113,89 @@ def refresh_token(request):
 @permission_classes([IsAuthenticated])
 def my_profile(request):
     user = request.user
+    profile_picture_url = user.profile_picture.url if user.profile_picture else None
     response_data = {
         'user_id': user.user_id,
         'username': user.username,
         'nickname': user.nickname,
+        'profile_picture' : profile_picture_url
     }
     return Response({
         'result': 'true',
         'data': response_data,
         'message': '프로필 정보'
     }, status=status.HTTP_200_OK)
+
+
+# 아이디 찾기
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def find_username(request) :
+    # 전화번호를 받아온다
+    phone_number = request.data.get('phone_number')
+
+    # 전화번호를 입력하지 않았을 경우
+    if not phone_number :
+        response = {
+            'result' : False,
+            'message' : '전화번호를 입력해주세요'
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    try:
+        # 전화번호를 통해 원하는 객체 찾기
+        user = User.objects.get(phone_number=phone_number)
+
+        response = {
+            'result' : True,
+            'message' : '아이디가 성공적으로 반환되었습니다',
+            'username' : user.username
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+    # 객체가 없을 경우
+    except User.DoesNotExist :
+        response = {
+            'result' : False,
+            'message' : '해당 전화번호로 등록된 사용자가 없습니다'
+        }
+        return Response(response, status=status.HTTP_404_NOT_FOUND)
+    
+
+# 비밀번호 찾기
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def find_password(request) :
+    # 아이디와 전화번호 받아오기
+    username = request.data.get('username')
+    phone_number = request.data.get('phone_number')
+
+    # 아이디와 전화번호를 입력하지 않았을 경우
+    if not username and phone_number :
+        response = {
+            'result' : False,
+            'message' : '아이디와 전화번호를 입력해주세요'
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+
+    try :
+        # 아이디와 전화번호를 통해 원하는 객체 찾기
+        user = User.objects.get(username=username, phone_number=phone_number)
+
+        response = {
+            'result' : True,
+            'message' : '비밀번호가 성공적으로 반환되었습니다',
+            'password' : user.password
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+    # 객체가 없을 경우
+    except User.DoesNotExist :
+        response = {
+            'result' : False,
+            'message' : '해당 아이디와 전화번호로 등록된 사용자는 없습니다'
+        }
+        return Response(response, status=status.HTTP_404_NOT_FOUND)
+
