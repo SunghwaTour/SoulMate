@@ -161,3 +161,41 @@ def find_username(request) :
             'message' : '해당 전화번호로 등록된 사용자가 없습니다'
         }
         return Response(response, status=status.HTTP_404_NOT_FOUND)
+    
+
+# 비밀번호 찾기
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def find_password(request) :
+    # 아이디와 전화번호 받아오기
+    username = request.data.get('username')
+    phone_number = request.data.get('phone_number')
+
+    # 아이디와 전화번호를 입력하지 않았을 경우
+    if not username and phone_number :
+        response = {
+            'result' : False,
+            'message' : '아이디와 전화번호를 입력해주세요'
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+
+    try :
+        # 아이디와 전화번호를 통해 원하는 객체 찾기
+        user = User.objects.get(username=username, phone_number=phone_number)
+
+        response = {
+            'result' : True,
+            'message' : '비밀번호가 성공적으로 반환되었습니다',
+            'password' : user.password
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+    # 객체가 없을 경우
+    except User.DoesNotExist :
+        response = {
+            'result' : False,
+            'message' : '해당 아이디와 전화번호로 등록된 사용자는 없습니다'
+        }
+        return Response(response, status=status.HTTP_404_NOT_FOUND)
+
