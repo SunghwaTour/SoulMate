@@ -125,3 +125,39 @@ def my_profile(request):
         'data': response_data,
         'message': '프로필 정보'
     }, status=status.HTTP_200_OK)
+
+
+# 아이디 찾기
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def find_username(request) :
+    # 전화번호를 받아온다
+    phone_number = request.data.get('phone_number')
+
+    # 전화번호를 입력하지 않았을 경우
+    if not phone_number :
+        response = {
+            'result' : False,
+            'message' : '전화번호를 입력해주세요'
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    try:
+        # 전화번호를 통해 원하는 객체 찾기
+        user = User.objects.get(phone_number=phone_number)
+
+        response = {
+            'result' : True,
+            'message' : '아이디가 성공적으로 반환되었습니다',
+            'username' : user.username
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+    # 객체가 없을 경우
+    except User.DoesNotExist :
+        response = {
+            'result' : False,
+            'message' : '해당 전화번호로 등록된 사용자가 없습니다'
+        }
+        return Response(response, status=status.HTTP_404_NOT_FOUND)
