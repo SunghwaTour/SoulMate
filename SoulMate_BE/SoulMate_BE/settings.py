@@ -29,7 +29,9 @@ SECRET_KEY = my_settings.SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '35.192.131.111']
+ALLOWED_HOSTS = ['*']
+CORS_ORIGIN_WHITELIST = ('http://127.0.0.1:3000', 'http://localhost:3000','http://35.192.131.111')
+CORS_ALLOW_CREDENTIALS = True
 
 pymysql.install_as_MySQLdb()
 
@@ -45,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist', 
     'rest_framework',
     'user',
+    'corsheaders',
 ]
 
 REST_FRAMEWORK = {
@@ -80,6 +83,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'SoulMate_BE.urls'
