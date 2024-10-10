@@ -1,0 +1,595 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+  line-height: 1.6;
+  background-color: #f4f4f4;
+  color: #333;
+  margin-top: 4rem;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  color: #fff;
+  padding: 1rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  width: 1127px;
+  margin-left: auto;
+  margin-right: auto;
+  align-items: center;
+}
+
+.MainHeaderContent {
+  width: 70%;
+}
+
+.SubHeaderContent {
+  width: 30%;
+  padding: 20px;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+main {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  display: flex;
+  gap: 1rem;
+}
+
+.announcement {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.announcement-item {
+  width: 49%;
+  background-color: #fff;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(34, 36, 38, 0.15);
+}
+
+table {
+  width: 100%;
+  margin: 0;
+}
+
+.top-td {
+  padding: 0.5rem;
+  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
+}
+
+.body-td {
+  padding: 0.5rem;
+}
+
+.body-td div {
+  padding: 0.8rem;
+  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
+}
+
+.announcement-item {
+  background-color: #ffffee;
+}
+
+.announcement-header {
+  text-align: center;
+}
+
+.announcement-body {
+  padding: 10px;
+}
+
+.announcement-item img {
+  width: 1rem;
+  margin-right: 1rem;
+}
+
+h2 {
+  padding: 5px 10px;
+  margin-bottom: 0;
+  box-shadow: none;
+  background-color: #efefef;
+  border: none;
+}
+
+.announcement-item ul {
+  list-style: none;
+}
+
+.announcement-item ul li {
+  margin-bottom: 10px;
+}
+
+.board-MainSection,
+.board-LastSection {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.board-SubSection {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.step-MainSection {
+  width: 100%;
+  gap: 20px;
+}
+
+.board {
+  background-color: #fff;
+  padding: 10px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  margin-bottom: 1rem;
+}
+
+.board-Body {
+  display: flex;
+  width: 100%;
+  gap: 5%;
+  padding-top: 1rem;
+}
+
+.body-img img {
+  margin-left: 1rem;
+  width: 5rem;
+}
+
+.column {
+  text-align: center;
+  width: 30%;
+}
+
+.column img {
+  width: 100%;
+}
+
+.board h3 {
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+
+.board ul {
+  list-style: none;
+}
+
+.board ul li {
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
+  padding-top: 10px;
+}
+
+.logo h1 {
+  font-size: 24px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+}
+
+nav ul li {
+  margin-left: 20px;
+}
+
+nav ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  width: 30px;
+}
+
+.hamburger div {
+  background-color: #fff;
+  height: 2px;
+  margin: 3px 0;
+  width: 100%;
+}
+
+.MainHeader {
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#login {
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+#loginForm div {
+  margin-bottom: 15px;
+}
+
+#loginForm label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+#loginForm input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.login {
+  width: 100%;
+  padding: 10px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.login:hover {
+  background-color: #509bd4;
+}
+
+.LoginForm {
+  gap: 0.5rem;
+  display: grid;
+}
+
+.LoginForm [type="submit"] {
+  background-color: #2185d0;
+  color: white;
+}
+
+.Signup-button {
+  color: #21ba45;
+  background-color: white;
+  border: 1px solid #1bb63f;
+  text-align: center;
+  cursor: pointer;
+  min-height: 2.3rem;
+  line-height: 2.3rem;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Common Footer Styles (Same as before) */
+footer {
+  background-color: white;
+  border-top: 1px solid #ddd;
+  padding: 20px;
+  font-family: "Arial", sans-serif;
+  width: 100%;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-left,
+.footer-middle,
+.footer-right {
+  border-right: 1px solid #999;
+  padding: 1rem;
+  width: 31.25%;
+}
+
+.footer-left ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-left li {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #999;
+  width: 100%;
+}
+
+.footer-left li .icon {
+  margin-right: 10px;
+}
+
+.footer-middle {
+  text-align: center;
+  flex: 1;
+}
+
+.footer-middle p {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.complaint-btn {
+  background-color: #2185d0;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 3px;
+  width: 100%;
+}
+
+.complaint-btn:hover {
+  background-color: #509bd4;
+}
+
+.footer-right {
+  text-align: right;
+  border: none;
+}
+
+.footer-right p {
+  font-size: 14px;
+  color: #999;
+}
+
+/* Mobile View Adjustments */
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    text-align: left;
+  }
+
+  .footer-left ul {
+    margin-bottom: 20px;
+  }
+
+  .footer-middle {
+    margin-bottom: 20px;
+  }
+
+  .complaint-btn {
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+  }
+
+  .footer-right {
+    margin-top: 20px;
+    text-align: left;
+  }
+
+  .footer-right p {
+    font-size: 13px;
+  }
+
+  .footer-left,
+  .footer-middle,
+  .footer-right {
+    border: none;
+    padding: 1rem;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  * {
+    font-size: 100%;
+  }
+
+  main {
+    display: block;
+  }
+
+  .MainHeaderContent {
+    width: 100%;
+  }
+
+  .SubHeaderContent {
+    width: 100%;
+    padding: 0;
+  }
+
+  .SubHeaderContent img {
+    width: 100%;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .announcement {
+    display: block;
+    width: 100%;
+  }
+
+  .announcement-item {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  nav ul {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #333;
+    flex-direction: column;
+    opacity: 0.9;
+    display: none;
+  }
+
+  nav ul li {
+    text-align: center;
+    padding: 15px 0;
+    margin: 0;
+  }
+
+  nav ul.show {
+    display: flex;
+  }
+  .board-MainSection,
+  .board-SubSection,
+  .board-LastSection {
+    display: none;
+  }
+  .board {
+    margin-bottom: 1rem;
+  }
+  .body-img {
+    display: none;
+  }
+
+  #login {
+    display: none;
+  }
+
+  .Step-Body .card {
+    display: none; /* 모든 카드를 기본적으로 숨김 */
+  }
+
+  .Step-Body .card:nth-child(-n + 3) {
+    display: flex; /* 첫 번째 카드부터 세 번째 카드까지만 보이도록 설정 */
+    margin: 0.5rem;
+  }
+}
+
+/* 모달 스타일 추가 */
+
+.LoginButton {
+  border: none;
+  background: none;
+  color: white;
+  font-weight: bold;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.login-modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.login-content {
+  background-color: #fff;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 400px;
+  position: relative;
+}
+
+.close {
+  color: #aaa;
+  position: absolute;
+  top: 10px;
+  right: 25px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.Step {
+  background-color: #fff;
+  padding: 10px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  margin-bottom: 1rem;
+}
+
+.Step ul {
+  list-style: none;
+}
+
+.Step ul li {
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
+  padding-top: 10px;
+}
+
+.Step h2 {
+  background-color: #00b5ad;
+  color: white;
+}
+
+.ui-card > .content {
+  border: none;
+  border-top: 1px solid gray;
+  margin: 0;
+  padding: 1em 1em;
+}
+
+.Step-Body {
+  display: flex;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 7.4rem;
+  border: 1px solid #ebeaec;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  margin: 7px 0 0 0;
+  margin-right: 1rem;
+}
+
+.bottom {
+  line-height: 2rem;
+  padding-left: 1rem;
+}
+
+.CardImg img {
+  width: 100%;
+  border-radius: 5px 5px 0px 0px;
+  border-bottom: 1px solid black;
+}

@@ -1,0 +1,45 @@
+.qna-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.post-list {
+  list-style: none;
+  padding: 0;
+}
+
+.post-item {
+  background: #f9f9f9;
+  margin: 10px 0;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination-button {
+  background: #333;
+  color: white;
+  border: none;
+  margin: 0 2px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination-button.active {
+  background: #333;
+  font-weight: bold;
+}
+
+.pagination-button:disabled {
+  background: #ddd;
+  cursor: not-allowed;
+}
