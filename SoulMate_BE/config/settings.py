@@ -86,7 +86,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-ROOT_URLCONF = 'SoulMate_BE.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -104,7 +104,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'SoulMate_BE.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
