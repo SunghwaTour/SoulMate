@@ -36,8 +36,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     nickname = models.CharField(max_length=255, unique=True)  # 닉네임 (중복 불가)
     phone_number = models.CharField(max_length=15, unique=True)  # 전화번호 (중복 불가)
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True, default='profile_pictures/default_image.jpg')
-    introduction = models.CharField(max_length=500, null=True, blank=True)  # 자기소개
-    phone_number_verified = models.BooleanField(default=False) # 전화번호 인증 여부  
+    phone_number_verified = models.BooleanField(default=False) # 전화번호 인증 여부
+    email = models.CharField(max_length=255, unique=True) # 이메일  
+    name = models.CharField(max_length=255) # 실명
     
     is_active = models.BooleanField(default=True)  # 사용자 활성화 여부
     is_staff = models.BooleanField(default=False)  # 관리자 여부
@@ -47,7 +48,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
     USERNAME_FIELD = 'username'  # 로그인에 사용할 필드 지정
-    REQUIRED_FIELDS = ['nickname', 'phone_number']  # 추가로 필요한 필드가 있다면 이 리스트에 추가
+    REQUIRED_FIELDS = ['nickname']  # 추가로 필요한 필드가 있다면 이 리스트에 추가
 
     objects = UserManager()
 

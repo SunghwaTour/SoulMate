@@ -8,7 +8,7 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['user_id', 'username', 'password', 'password_confirm', 'nickname', 'phone_number', 'profile_picture', 'introduction', 'last_login']
+        fields = ['user_id', 'name', 'email', 'username', 'password', 'password_confirm', 'nickname', 'phone_number', 'profile_picture', 'introduction', 'last_login']
         extra_kwargs = {'password': {'write_only': True}} # 비밀번호는 쓰기 전용
 
     
@@ -25,8 +25,9 @@ class SignUpSerializer(serializers.ModelSerializer):
             username=validated_data['username'],
             nickname=validated_data['nickname'],
             phone_number=validated_data['phone_number'],
-            introduction=validated_data.get('introduction', None),
-            last_login=datetime.now()
+            last_login=datetime.now(),
+            name = validated_data['name'],
+            email = validated_data['email']
         )
         user.password = make_password(validated_data['password'])
         profile_picture = validated_data.get('profile_picture', None)
