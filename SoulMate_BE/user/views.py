@@ -251,7 +251,7 @@ def verify_code(request):
         }, status=status.HTTP_400_BAD_REQUEST)
 
     if verification_code == stored_code:
-        
+        cache.set(f"verified_{phone_number}", True, timeout=3600)  # 인증 완료 상태 캐시에 저장
         # 인증 성공 처리
         return Response({
             'result': True,
