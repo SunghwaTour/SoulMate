@@ -10,6 +10,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from .twilio import generate_verification_code, send_verification_code
 from django.core.cache import cache  # Django 캐시 사용
+from django.contrib.auth.hashers import make_password
 
 
 # 회원가입
@@ -162,10 +163,10 @@ def find_username(request) :
         return Response(response, status=status.HTTP_404_NOT_FOUND)
     
 
-# 비밀번호 찾기
+# 비밀번호 재설정 요청
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def find_password(request) :
+def reset_password_request(request) :
     # 아이디와 전화번호 받아오기
     username = request.data.get('username')
     phone_number = request.data.get('phone_number')
@@ -177,6 +178,13 @@ def find_password(request) :
             'message' : '아이디와 전화번호를 입력해주세요'
         }
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    # 전화번호 인증이 완료되었는지 확인
+    if not cache.get(f"verified_{phone_number}"):
+        return Response({
+            'result': 'false',
+            'message': '전화번호 인증이 완료되지 않았습니다.'
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 
     try :
@@ -185,8 +193,8 @@ def find_password(request) :
 
         response = {
             'result' : True,
-            'message' : '비밀번호가 성공적으로 반환되었습니다',
-            'password' : user.password
+            'message' : '사용자가 확인되었습니다. 새로운 비밀번호를 입력해주세요.',
+            'user_id' : user.user_id
         }
         return Response(response, status=status.HTTP_200_OK)
     
@@ -197,6 +205,48 @@ def find_password(request) :
             'message' : '해당 아이디와 전화번호로 등록된 사용자는 없습니다'
         }
         return Response(response, status=status.HTTP_404_NOT_FOUND)
+    
+# 비밀번호 재설정
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def reset_password(request):
+    # 비밀번호 재설정을 위한 정보 받기
+    user_id = request.data.get('user_id')
+    password = request.data.get('password')
+    password_confirm = request.data.get('password_confirm')
+
+    # 비밀번호 입력 확인
+    if not user_id or not password or not password_confirm:
+        return Response({
+            'result': False,
+            'message': '비밀번호를 모두 입력해주세요'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    # 비밀번호 일치 확인
+    if password != password_confirm:
+        return Response({
+            'result': False,
+            'message': '비밀번호가 일치하지 않습니다.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        # 사용자 찾기
+        user = User.objects.get(user_id=user_id)
+        
+        # 비밀번호 재설정
+        user.password = make_password(password)
+        user.save()
+
+        return Response({
+            'result': True,
+            'message': '비밀번호가 성공적으로 재설정되었습니다.'
+        }, status=status.HTTP_200_OK)
+
+    except User.DoesNotExist:
+        return Response({
+            'result': False,
+            'message': '사용자를 찾을 수 없습니다.'
+        }, status=status.HTTP_404_NOT_FOUND)
 
 # 전화번호 인증 코드 전송
 @api_view(['POST'])
