@@ -33,6 +33,11 @@ ALLOWED_HOSTS = ['127.0.0.1', '35.192.131.111', 'kingbus.kr']
 CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:8000', 'http://localhost:3000', 'http://35.192.131.111', 'http://kingbus.kr']
 CORS_ALLOW_CREDENTIALS = True
 
+# Twilio
+TWILIO_ACCOUNT_SID = my_settings.TWILIO_ACCOUNT_SID
+TWILIO_AUTH_TOKEN = my_settings.TWILIO_AUTH_TOKEN
+TWILIO_PHONE_NUMBER = my_settings.TWILIO_PHONE_NUMBER
+
 pymysql.install_as_MySQLdb()
 
 # Application definition
