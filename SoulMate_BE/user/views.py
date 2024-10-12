@@ -134,6 +134,13 @@ def find_username(request) :
         }
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
     
+    # 전화번호 인증이 완료되었는지 확인
+    if not cache.get(f"verified_{phone_number}"):
+        return Response({
+            'result': 'false',
+            'message': '전화번호 인증이 완료되지 않았습니다.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
     
     try:
         # 전화번호를 통해 원하는 객체 찾기
