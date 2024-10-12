@@ -16,5 +16,4 @@ def send_verification_code(phone_number, code):
         from_=settings.TWILIO_PHONE_NUMBER,
         to=f'+82{phone_number[1:]}'
     )
-    print(message)
     return message.sid
