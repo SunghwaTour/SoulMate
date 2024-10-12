@@ -36,7 +36,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     nickname = models.CharField(max_length=255, unique=True)  # 닉네임 (중복 불가)
     phone_number = models.CharField(max_length=15, unique=True)  # 전화번호 (중복 불가)
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True, default='profile_pictures/default_image.jpg')
-    phone_number_verified = models.BooleanField(default=False) # 전화번호 인증 여부
     email = models.CharField(max_length=255, unique=True) # 이메일  
     name = models.CharField(max_length=255) # 실명
     
