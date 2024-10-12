@@ -8,22 +8,14 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from .twilio import generate_verification_code, send_verification_code
+from django.core.cache import cache  # Django 캐시 사용
+
 
 # 회원가입
 @api_view(['POST'])
 @permission_classes([AllowAny]) 
 def register(request):
-
-    # 전화번호가 인증되었는지 확인 (해당 유저의 is_verified 필드 확인)
-    phone_number = request.data.get('phone_number')
-    
-    # try:
-    #     user = User.objects.get(phone_number=phone_number)
-    #     if not user.is_verified:
-    #         return Response({"error": "전화번호 인증이 완료되지 않았습니다."}, status=status.HTTP_400_BAD_REQUEST)
-    # except User.DoesNotExist:
-    #     return Response({"error": "해당 전화번호로 가입된 사용자가 없습니다."}, status=status.HTTP_404_NOT_FOUND)
-
     serializer = SignUpSerializer(data=request.data)
     if serializer.is_valid():
         # 전화번호 인증이 완료된 사용자만 회원가입 완료
@@ -199,3 +191,74 @@ def find_password(request) :
         }
         return Response(response, status=status.HTTP_404_NOT_FOUND)
 
+# 전화번호 인증 코드 전송
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def send_code(request) :
+    phone_number = request.data.get('phone_number')
+
+    if not phone_number :
+        response = {
+            'result' : False,
+            'message' : '전화번호를 입력해주세요'
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        # 인증 코드 생성 및 전송
+        verification_code = generate_verification_code()
+        send_verification_code(phone_number, verification_code)
+
+        # 인증 코드를 캐시에 저장 (5분 동안 유지)
+        cache.set(phone_number, verification_code, timeout=300) 
+        
+
+        response = {
+            'result': True,
+            'message': '인증 코드가 성공적으로 전송되었습니다.'
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+    except Exception as e:
+        response = {
+            'result': False,
+            'message': str(e)           
+        }
+        return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)    
+    
+# 전화번호 인증 코드 검증 
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def verify_code(request):
+    phone_number = request.data.get('phone_number')
+    verification_code = request.data.get('verification_code')
+
+    if not phone_number or not verification_code:
+        
+        return Response({
+            'result': False,
+            'message': '전화번호와 인증 코드를 모두 입력해주세요.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    # 캐시에서 저장된 인증 코드 가져오기
+    stored_code = cache.get(phone_number)
+
+    if stored_code is None:
+        
+        return Response({
+            'result': 'false',
+            'message': '인증 코드가 만료되었거나 잘못된 전화번호입니다.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    if verification_code == stored_code:
+        
+        # 인증 성공 처리
+        return Response({
+            'result': True,
+            'message': '인증이 성공적으로 완료되었습니다.'
+        }, status=status.HTTP_200_OK)
+    else:
+        return Response({
+            'result': False,
+            'message': '잘못된 인증 코드입니다.'
+        }, status=status.HTTP_400_BAD_REQUEST)
