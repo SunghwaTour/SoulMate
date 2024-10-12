@@ -2,6 +2,7 @@ from datetime import datetime
 from rest_framework import serializers
 from .models import User
 from django.contrib.auth.hashers import make_password, check_password
+from django.core.cache import cache
 
 class SignUpSerializer(serializers.ModelSerializer):
     password_confirm = serializers.CharField(write_only=True) # 전화번호 확인 필드
@@ -15,7 +16,13 @@ class SignUpSerializer(serializers.ModelSerializer):
     def validate(self, data):
         # 비밀번호 일치 확인
         if data['password'] != data['password_confirm']:
-            raise serializers.ValidationError({"비밀번호가 일치하지 않습니다."})
+            raise serializers.ValidationError({"password" : "비밀번호가 일치하지 않습니다."})
+        
+        # 전화번호 인증 확인 (캐시에서 인증 코드가 있는지 확인)
+        phone_number = data.get('phone_number')
+        if not cache.get(f"verified_{phone_number}"):
+            raise serializers.ValidationError({"phone_number": "전화번호 인증이 완료되지 않았습니다."})
+
         return data
 
     # User 생성
