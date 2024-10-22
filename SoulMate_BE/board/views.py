@@ -69,6 +69,27 @@ class BoardViewSet(viewsets.ModelViewSet) :
                 'message' : '게시물 수정에 실패했습니다.',
                 'data' : serializer.errors
             }, status=status.HTTP_400_BAD_REQUEST)
+        
+    # 게시글 삭제
+    # DELETE : /board/{board_id}
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+
+        # 작성자가 본인인지 확인
+        if instance.user != request.user :
+            return Response({
+                'result' : False,
+                'message' : '본인만 게시물 작성이 가능합니다',
+                'data' : 0
+            }, status=status.HTTP_403_FORBIDDEN)
+
+
+        return Response({
+            'result' : True,
+            'message' : '게시물을 삭제하였습니다',
+            'data' : 1
+        },status=status.HTTP_204_NO_CONTENT)
 
 
 
