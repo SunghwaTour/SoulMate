@@ -29,6 +29,9 @@ SECRET_KEY = my_settings.SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# mysettings.py 파일에서 캐시 설정 가져오기
+from .mysettings import CACHES
+
 ALLOWED_HOSTS = ['127.0.0.1', '35.192.131.111', 'kingbus.kr']
 CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:8000', 'http://localhost:3000', 'http://35.192.131.111', 'http://kingbus.kr']
 CORS_ALLOW_CREDENTIALS = True
