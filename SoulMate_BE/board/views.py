@@ -4,7 +4,6 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status
 
-
 from .models import Board
 from .serializers import BoardSerializer
 
@@ -17,7 +16,7 @@ class BoardViewSet(viewsets.ModelViewSet) :
 
 
     # 게시물 생성
-    # POST : /boards/
+    # POST : /board/
     def create(self, request, *args, **kwargs) :
         serializer = self.get_serializer(data=request.data)
 
@@ -37,6 +36,41 @@ class BoardViewSet(viewsets.ModelViewSet) :
                 'data': serializer.errors
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        
+    # 게시물 수정
+    # UPDATE : /board/{board_id}/
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+
+        # 작성자가 본인인지 확인
+        if instance.user != request.user :
+            return Response({
+                'result' : False,
+                'message' : '본인만 게시물 작성이 가능합니다',
+                'data' : 0
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        # 작성자가 맞으면, 수정 가능
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+
+        if serializer.is_valid() :
+            serializer.save()
+
+            return Response({
+                'result' : True,
+                'message' : '게시물이 수정되었습니다',
+                'data' : serializer.data
+            }, status=status.HTTP_200_OK)
+        
+        else :
+            return Response({
+                'result' : False,
+                'message' : '게시물 수정에 실패했습니다.',
+                'data' : serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 
