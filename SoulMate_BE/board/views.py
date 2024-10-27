@@ -142,7 +142,7 @@ class BoardDetail(APIView):
         }, status=status.HTTP_204_NO_CONTENT)
 
 
-class CommentView(APIView) :
+class CommentListCreateView(APIView) :
     permission_classes = [IsAuthenticatedOrReadOnly]  # 인증된 사용자만 작성 가능
 
     # 개별 게시글 가져오기
@@ -155,13 +155,25 @@ class CommentView(APIView) :
                 'message': '게시물을 찾을 수 없습니다.',
                 'data': 0
             }, status=status.HTTP_404_NOT_FOUND)
+        
+    # 댓글 조회
+    def get(self, request, board_id) :
+        
+        board = self.get_object(board_id)
+        comments = Comment.objects.filter(board=board).order_by('created_At')
+        serializer = CommentSerializer(comments, many=True)
+        
+        return Response({
+            'result': True,
+            'message': '댓글 조회 성공',
+            'data': serializer.data
+        }, status=status.HTTP_200_OK)
+
 
     # 댓글 작성
     def post(self, request, board_id) :
 
         board = self.get_object(board_id)
-
-        print(board)
 
          # 만약 get_object가 Response를 반환하면 그대로 return
         if isinstance(board, Response):
