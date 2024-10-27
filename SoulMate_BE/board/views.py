@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
 
-from .models import Board
-from .serializers import BoardSerializer, BoardListSerializer
+from .models import Board, Comment
+from .serializers import BoardSerializer, BoardListSerializer, CommentSerializer
 
 # 게시물 전체 조회
 class BoardList(ListAPIView):
@@ -142,4 +142,46 @@ class BoardDetail(APIView):
         }, status=status.HTTP_204_NO_CONTENT)
 
 
+class CommentView(APIView) :
+    permission_classes = [IsAuthenticatedOrReadOnly]  # 인증된 사용자만 작성 가능
 
+    # 개별 게시글 가져오기
+    def get_object(self, board_id):
+        try:
+            return Board.objects.get(board_id=board_id)  # UUID 필드 확인
+        except Board.DoesNotExist:
+            return Response({
+                'result': False,
+                'message': '게시물을 찾을 수 없습니다.',
+                'data': 0
+            }, status=status.HTTP_404_NOT_FOUND)
+
+    # 댓글 작성
+    def post(self, request, board_id) :
+
+        board = self.get_object(board_id)
+
+        print(board)
+
+         # 만약 get_object가 Response를 반환하면 그대로 return
+        if isinstance(board, Response):
+            return board
+        
+        serializer = CommentSerializer(data=request.data)
+
+        if serializer.is_valid() :
+            comment = serializer.save(board=board, user=request.user)
+
+            return Response({
+                'result' : True,
+                'message' : '댓글 작성 성공',
+                'data' : {
+                    'comment_id' : comment.comment_id
+                }
+            }, status=status.HTTP_201_CREATED)
+        
+        return Response({
+            'result' : False,
+            'message' : '댓글 작성 실패',
+            'data' : serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)

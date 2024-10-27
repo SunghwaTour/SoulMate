@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Board
+from .models import Board, Comment
 
 class BoardSerializer(serializers.ModelSerializer) :
     user = serializers.StringRelatedField()  # user 필드를 StringRelatedField로 설정
@@ -14,3 +14,11 @@ class BoardListSerializer(serializers.ModelSerializer) :
     class Meta : 
         model = Board
         fields = ['board_id', 'title', 'created_At', 'updated_At', 'user']
+
+class CommentSerializer(serializers.ModelSerializer) :
+    user = serializers.StringRelatedField()  # user 필드를 StringRelatedField로 설정
+    board = serializers.PrimaryKeyRelatedField(read_only=True)  # board 필드도 읽기 전용
+
+    class Meta :
+        model = Comment
+        fields = ['comment_id', 'board', 'user', 'content', 'created_At', 'updated_At']
