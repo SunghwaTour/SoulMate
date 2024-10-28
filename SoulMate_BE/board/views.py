@@ -211,7 +211,7 @@ class CommentDetailView(APIView) :
                 'data' : 0
             }, status=status.HTTP_404_NOT_FOUND)
 
-
+    # 댓글 수정
     def put(self, request, board_id, comment_id) :
         # 원하는 댓글 객체 찾기
         comment = self.get_comment_object(board_id, comment_id)
@@ -247,3 +247,31 @@ class CommentDetailView(APIView) :
             'message' : '댓글 수정 실패',
             'data' : serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
+    
+    # 댓글 삭제
+    def delete(self, request, board_id, comment_id) :
+
+        # 원하는 댓글 객체 찾기
+        comment = self.get_comment_object(board_id, comment_id)
+
+        # 만약 get_comment_object가 Response를 반환하면 그대로 return
+        if isinstance(comment, Response):
+            return comment
+
+        if comment.user != request.user :
+            return Response({
+                'result' : False,
+                'message' : '본인만 댓글 삭제 가능',
+                'data' : 0
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        # 댓글 삭제
+        comment.delete()
+
+        return Response({
+            'result' : True,
+            'message' : '댓글 삭제 성공',
+            'data' : 1
+        })
+        
+        
