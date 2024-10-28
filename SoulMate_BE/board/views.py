@@ -88,8 +88,6 @@ class BoardDetail(APIView):
             return board
 
         # 작성자가 본인인지 확인
-        print(board.user)
-        print(request.user)
         if board.user != request.user:
             return Response({
                 'result': False,
@@ -195,5 +193,57 @@ class CommentListCreateView(APIView) :
         return Response({
             'result' : False,
             'message' : '댓글 작성 실패',
+            'data' : serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CommentDetailView(APIView) :
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    # 개별 댓글 가져오기
+    def get_comment_object(self, board_id, comment_id):
+        try:
+            return Comment.objects.get(board_id=board_id, comment_id=comment_id)
+        except Comment.DoesNotExist:
+            return Response({
+                'result' : False,
+                'message' : '댓글을 찾을 수 없음',
+                'data' : 0
+            }, status=status.HTTP_404_NOT_FOUND)
+
+
+    def put(self, request, board_id, comment_id) :
+        # 원하는 댓글 객체 찾기
+        comment = self.get_comment_object(board_id, comment_id)
+
+         # 만약 get_comment_object가 Response를 반환하면 그대로 return
+        if isinstance(comment, Response):
+            return comment
+
+        # 작성자 확인
+        if comment.user != request.user :
+            return Response({
+                'result' : False,
+                'message' : '본인만 댓글 수정 가능',
+                'data' : 0
+            }, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = CommentSerializer(comment, data=request.data)
+
+        if serializer.is_valid() :
+            # 수정한 댓글 저장
+            serializer.save()
+
+            return Response({
+                'result' : True,
+                'message' : '댓글 수정 성공',
+                'data' : {
+                    'comment_id' : comment.comment_id
+                }
+            })
+        
+        return Response({
+            'result' : False,
+            'message' : '댓글 수정 실패',
             'data' : serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
