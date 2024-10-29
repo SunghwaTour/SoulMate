@@ -1,12 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
-from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status
-from django.http import Http404
 
-from .models import Board, Comment
+from .models import Board, Comment, Like
 from .serializers import BoardSerializer, BoardListSerializer, CommentSerializer
 
 # 게시물 전체 조회
@@ -150,7 +148,7 @@ class CommentListCreateView(APIView) :
         except Board.DoesNotExist:
             return Response({
                 'result': False,
-                'message': '게시물을 찾을 수 없습니다.',
+                'message': '게시물을 찾을 수 없음',
                 'data': 0
             }, status=status.HTTP_404_NOT_FOUND)
         
@@ -273,5 +271,83 @@ class CommentDetailView(APIView) :
             'message' : '댓글 삭제 성공',
             'data' : 1
         })
+
+class LikeView(APIView) :
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    # 게시물 객체 찾는 함수
+    def get_object_board(self, target_id) :
+        try :
+            return Board.objects.get(board_id=target_id)
+        except Board.DoesNotExist :
+            return Response({
+                'result' : False,
+                'message' : '게시물을 찾을 수 없음',
+                'data' : 0
+            }, status=status.HTTP_404_NOT_FOUND)
         
+    # 댓글 객체 찾는 함수
+    def get_object_comment(self, target_id) :
+        try :
+            return Comment.objects.get(comment_id=target_id)
+        except Comment.DoesNotExist :
+            return Response({
+                'result' : False,
+                'message' : '댓글을 찾을 수 없음',
+                'data' : 0
+            }, status=status.HTTP_404_NOT_FOUND)
+
+    # 좋아요 기능
+    # 좋아요 없을 시 -> 추가
+    # 좋아요 이미 있을 시 -> 삭제
+    def post(self, request, target_type, target_id) :
+        target = None
+
+        # 좋아요 대상이 게시물일 경우
+        if target_type == 'board' :
+            target = self.get_object_board(target_id)
+
+            if isinstance(target, Response) :
+                return target
+
+            like, created = Like.objects.get_or_create(user=request.user, board=target, comment=None)
         
+        # 좋아요 대상이 댓글일 경우
+        elif target_type == 'comment' :
+            target = self.get_object_comment(target_id)
+
+            if isinstance(target, Response) :
+                return target
+        
+            like, created = Like.objects.get_or_create(user=request.user, board=None, comment=target)
+
+        else :
+            return Response({
+                'result' : False,
+                'message' : '잘못된 대상',
+                'data' : 0
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # 좋아요 추가 및 취소 처리
+        if created:
+            target.like_count += 1
+            target.save()
+            return Response({
+                'result': True,
+                'message': f'{target_type} 좋아요 추가',
+                'data' : {
+                    'like_count': target.like_count
+                }
+            }, status=status.HTTP_201_CREATED)
+        else:
+            like.delete()
+            target.like_count -= 1
+            target.save()
+            return Response({
+                'result': True,
+                'message': f'{target_type} 좋아요 취소',
+                'data' : {
+                    'like_count': target.like_count
+                }
+            }, status=status.HTTP_200_OK)
+
