@@ -11,6 +11,8 @@ from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from .twilio import generate_verification_code, send_verification_code
 from django.core.cache import cache  # Django 캐시 사용
 from django.contrib.auth.hashers import make_password
+from django.utils import timezone
+
 
 
 # 회원가입
@@ -260,6 +262,38 @@ def send_code(request) :
             'message' : '전화번호를 입력해주세요'
         }
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+    # 요청 카운트 및 타임스탬프 가져오기
+    request_count = cache.get(f'request_count_{phone_number}', 0)
+    first_request_time = cache.get(f'first_request_time_{phone_number}')
+
+    current_time = timezone.now()
+    
+    # 요청이 1시간(3600초) 이내일 경우 요청 카운트 증가
+    if first_request_time:
+        time_diff = (current_time - first_request_time).total_seconds()
+        if time_diff < 360:  # 10분 이내
+            if request_count >= 5:  # 최대 요청 횟수 제한 (예: 5회)
+                response = {
+                    'result': False,
+                    'message': '인증 코드는 1시간마다 최대 5회 요청할 수 있습니다.'
+                }
+                return Response(response, status=status.HTTP_429_TOO_MANY_REQUESTS)
+            else:
+                request_count += 1
+        else:
+            # 1시간 이상 지났으면 카운트 및 타임스탬프 리셋
+            request_count = 1
+            first_request_time = current_time
+    else:
+        # 처음 요청 시 타임스탬프 설정
+        request_count = 1
+        first_request_time = current_time
+
+    # 현재 요청 시간 저장
+    cache.set(f'first_request_time_{phone_number}', first_request_time, timeout=360)  # 타임스탬프 캐시에 저장 (10분 유지)
+    cache.set(f'request_count_{phone_number}', request_count, timeout=360)  # 요청 카운트 캐시에 저장 (10분 유지)
+
     
     try:
         # 인증 코드 생성 및 전송
