@@ -6,14 +6,14 @@ class BoardSerializer(serializers.ModelSerializer) :
 
     class Meta :
         model = Board
-        fields = ['board_id', 'title', 'content', 'created_At', 'updated_At', 'user']
+        fields = ['board_id', 'title', 'content', 'created_At', 'updated_At', 'user', 'like_count']
 
 class BoardListSerializer(serializers.ModelSerializer) :
     user = serializers.StringRelatedField()  # user 필드를 StringRelatedField로 설정
 
     class Meta : 
         model = Board
-        fields = ['board_id', 'title', 'created_At', 'updated_At', 'user']
+        fields = ['board_id', 'title', 'created_At', 'updated_At', 'user', 'like_count']
 
 class CommentSerializer(serializers.ModelSerializer) :
     user = serializers.StringRelatedField()  # user 필드를 StringRelatedField로 설정
@@ -21,7 +21,7 @@ class CommentSerializer(serializers.ModelSerializer) :
 
     class Meta :
         model = Comment
-        fields = ['comment_id', 'board', 'user', 'content', 'created_At', 'updated_At']
+        fields = ['comment_id', 'board', 'user', 'content', 'created_At', 'updated_At', 'like_count']
 
 class LikeSerializer(serializers.ModelSerializer) :
     class Meta :
